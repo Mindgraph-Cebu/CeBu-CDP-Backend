@@ -13,7 +13,7 @@ def reframe_booker_dict(booker_dict):
         booker_dict["Details"]= Details
         Months = {key[23:]:value for key,value in booker_dict.items() if "BookingMonth" in key and value > 0}
         BookingChannel = {key[25:]:value for key,value in booker_dict.items() if "BookingChannel" in key and value > 0}
-        TravelBaggage = {key:value for key,value in booker_dict.items() if "TravelBaggage" in key and value > 0}
+        TravelBaggage = {key[23:]:value for key,value in booker_dict.items() if "TravelBaggage" in key and value > 0}
         TravelInsurance = {key[26:]:value for key,value in booker_dict.items() if "TravelInsurance" in key and value > 0}
         AgeRange = {key[19:]:value for key,value in booker_dict.items() if "AgeRange" in key and value > 0}
         booker_dict = {key:value for key,value in booker_dict.items() if "BookingMonth" not in key and "TravelBaggage" not in key and "BookingChannel" not in key and "BookingCurrency" not in key and "TravelInsurance" not in key and "AgeRange" not in key}
@@ -23,7 +23,17 @@ def reframe_booker_dict(booker_dict):
         booker_dict["TravelBaggage"]=TravelBaggage
         booker_dict["TravelInsurance"]=TravelBaggage
         booker_dict["TravelInsurance"]=TravelInsurance
-
+        tb = {}
+        for key,value in booker_dict["TravelBaggage"].items():
+            check = key.split("_")
+            toprint = ""
+            for element in check :
+                if "space" not in element:
+                    toprint+=element
+                    
+            tb[toprint] = value
+        del booker_dict["TravelBaggage"]
+        booker_dict["TravelBaggage"] = tb
         return booker_dict
 
 
@@ -40,7 +50,7 @@ def reframe_passenger_dict(passenger_dict):
         passenger_dict["Details"]= Details
         Months = {key[23:]:value for key,value in passenger_dict.items() if "BookingMonth" in key and value > 0}
         BookingChannel = {key[25:]:value for key,value in passenger_dict.items() if "BookingChannel" in key and value > 0}
-        TravelBaggage = {key:value for key,value in passenger_dict.items() if "TravelBaggage" in key and value > 0}
+        TravelBaggage = {key[23:]:value for key,value in passenger_dict.items() if "TravelBaggage" in key and value > 0}
         TravelInsurance = {key[26:]:value for key,value in passenger_dict.items() if "TravelInsurance" in key and value > 0}
         passenger_dict = {key:value for key,value in passenger_dict.items() if "BookingMonth" not in key and "TravelBaggage" not in key and "BookingChannel" not in key and "BookingCurrency" not in key and "TravelInsurance" not in key}
         passenger_dict["Months"]=Months
@@ -48,5 +58,16 @@ def reframe_passenger_dict(passenger_dict):
         passenger_dict["TravelBaggage"]=TravelBaggage
         passenger_dict["TravelInsurance"]=TravelBaggage
         passenger_dict["TravelInsurance"]=TravelInsurance
+        tb = {}
+        for key,value in passenger_dict["TravelBaggage"].items():
+            check = key.split("_")
+            toprint = ""
+            for element in check :
+                if "space" not in element:
+                    toprint+=element
+                    
+            tb[toprint] = value
+        del passenger_dict["TravelBaggage"]
+        passenger_dict["TravelBaggage"] = tb
         return passenger_dict
 
