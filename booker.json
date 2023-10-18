@@ -1,0 +1,87 @@
+{
+    "PersonID": 6807,
+    "BookerFirstName": "Mary Grace",
+    "BookerLastName": "Borromeo",
+    "BookerEmailAddress": "unknown",
+    "BookerMobile": "Unknown",
+    "TotalRevenue": 0.009999999776482582,
+    "BookerType": "Agent",
+    "BookerCity": "Unknown",
+    "LatestDate": "2018-07-30 20:37:45.003",
+    "FirstDate": "2018-07-30 20:37:45.003",
+    "UniqueClients": 2,
+    "TotalPassengers": 2,
+    "TravelMeals_separator_None": 2,
+    "TravelMeals_separator_CEB_space1_Meals": 0,
+    "IsEmployee_separator_Yes": 0,
+    "IsEmployee_separator_No": 2,
+    "Gender_separator_2": 0,
+    "Gender_separator_1": 2,
+    "Gender_separator_0": 0,
+    "IsEmployeeDependent_separator_Yes": 0,
+    "IsEmployeeDependent_separator_No": 2,
+    "TravelSoloOrGroup_separator_Group": 0,
+    "TravelSoloOrGroup_separator_Solo": 2,
+    "IsRegistered_separator_Yes": 0,
+    "IsRegistered_separator_No": 2,
+    "AgeRange_separator_Above100": 2,
+    "AgeRange_separator_11_to_20": 0,
+    "AgeRange_separator_71_to_80": 0,
+    "AgeRange_separator_61_to_70": 0,
+    "AgeRange_separator_81_to_90": 0,
+    "AgeRange_separator_1_to_10": 0,
+    "AgeRange_separator_41_to_50": 0,
+    "AgeRange_separator_51_to_60": 0,
+    "AgeRange_separator_91_to_100": 0,
+    "AgeRange_separator_21_to_30": 0,
+    "AgeRange_separator_31_to_40": 0,
+    "TravelOrigin": {
+        "MNL": 1,
+        "Unknown": 1
+    },
+    "TravelDestination": {
+        "CEB": 1,
+        "Unknown": 1
+    },
+    "TravelSeat": {
+        "Unknown": 2
+    },
+    "Details": {
+        "0": {
+            "origin": "Unknown",
+            "destination": "Unknown",
+            "insurance": "None",
+            "baggage": "None",
+            "meals": "None",
+            "travel_date": "Unknown",
+            "booking_date": "2018-07-30",
+            "revenue": 0.0,
+            "currency": "PHP",
+            "record_locator": "Unknown"
+        },
+        "1": {
+            "origin": "MNL",
+            "destination": "CEB",
+            "insurance": "None",
+            "baggage": "None",
+            "meals": "None",
+            "travel_date": "2018-07-31",
+            "booking_date": "2018-07-30",
+            "revenue": 0.009999999776482582,
+            "currency": "PHP",
+            "record_locator": "Unknown"
+        }
+    },
+    "Months": {
+        "July": 2
+    },
+    "BookingChannel": {
+        "Direct": 2
+    },
+    "TravelBaggage": {
+        "TravelBaggage_separator_None": 2
+    },
+    "TravelInsurance": {
+        "TravelInsurance_separator_None": 2
+    }
+}

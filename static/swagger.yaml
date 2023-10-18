@@ -1,0 +1,92 @@
+openapi: 3.0.0
+info:
+  title: Your API Title
+  description: Describe your API here.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8050
+    description: Local development server
+paths:
+  /milestones:
+    get:
+      summary: Get milestones
+      description: Retrieve milestones from the server.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+  /profile/search:
+    get:
+      summary: Search profiles
+      description: Search for passenger or booker profiles.
+      parameters:
+        - name: profile_type
+          in: query
+          description: The type of profile (e.g., passenger or booker).
+          required: true
+          schema:
+            type: string
+        - name: firstname
+          in: query
+          description: First name for searching profiles.
+          required: false
+          schema:
+            type: string
+        - name: lastname
+          in: query
+          description: Last name for searching profiles.
+          required: false
+          schema:
+            type: string
+        - name: phone
+          in: query
+          description: Phone number for searching profiles.
+          required: false
+          schema:
+            type: string
+        - name: email
+          in: query
+          description: Email address for searching profiles.
+          required: false
+          schema:
+            type: string
+        - name: id
+          in: query
+          description: Profile ID for searching profiles.
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+  /profile:
+    get:
+      summary: Get profile by ID
+      description: Retrieve a passenger or booker profile by ID.
+      parameters:
+        - name: profile_type
+          in: query
+          description: The type of profile (e.g., passenger or booker).
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: query
+          description: The ID of the profile to retrieve.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
