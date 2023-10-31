@@ -27,7 +27,7 @@ app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 @app.route('/milestones', methods=['GET'])
 def milestones():
     conn.execute("DROP TABLE IF EXISTS cdp_milestones")
-    conn.execute("CREATE TEMPORARY TABLE cdp_milestones AS SELECT * FROM read_parquet('profiles/index_milestone/*.parquet')")
+    conn.execute("CREATE TEMPORARY TABLE cdp_milestones AS SELECT * FROM read_parquet('../profiles/index_milestone/*.parquet')")
     # page = request.args.get('page', default=1, type=int)
     # page_size = 100  # Adjust the page size as needed
 
@@ -58,9 +58,9 @@ def profile_search():
 
     
     if profile_type == "passenger":
-        query = f"CREATE TEMPORARY TABLE cdp_profile AS SELECT passenger_hash,firstname,lastname,phone,emailaddress FROM read_parquet('profiles/{path}/*.parquet')  "
+        query = f"CREATE TEMPORARY TABLE cdp_profile AS SELECT passenger_hash,firstname,lastname,phone,emailaddress FROM read_parquet('../profiles/{path}/*.parquet')  "
     elif profile_type == "booker":
-        query = f"CREATE TEMPORARY TABLE cdp_profile AS SELECT personid,bookerfirstname,bookerlastname,bookermobile,bookeremailaddress FROM read_parquet('profiles/{path}/*.parquet')  "
+        query = f"CREATE TEMPORARY TABLE cdp_profile AS SELECT personid,bookerfirstname,bookerlastname,bookermobile,bookeremailaddress FROM read_parquet('../profiles/{path}/*.parquet')  "
 
     count = 0
 
@@ -140,7 +140,7 @@ def profile():
     if profie_type == 'passenger':
         passenger_hash = request.args.get("id")
         conn.execute(f"DROP TABLE IF EXISTS cdp_passenger_{passenger_hash}")
-        conn.execute(f"CREATE TEMPORARY TABLE cdp_passenger_{passenger_hash} AS SELECT * FROM read_parquet('profiles/passenger_details/*.parquet') WHERE passenger_hash ='{passenger_hash}'")
+        conn.execute(f"CREATE TEMPORARY TABLE cdp_passenger_{passenger_hash} AS SELECT * FROM read_parquet('../profiles/passenger_details/*.parquet') WHERE passenger_hash ='{passenger_hash}'")
         passenger_df = conn.execute(f"SELECT * FROM cdp_passenger_{passenger_hash}").df()
         passenger_dict = passenger_df.to_dict()
         passenger_dict = reframe_passenger_dict(passenger_dict)
@@ -152,7 +152,7 @@ def profile():
     elif profie_type == 'booker':
         personid = request.args.get("id")
         conn.execute(f"DROP TABLE IF EXISTS cdp_booker_{personid}")
-        conn.execute(f"CREATE TEMPORARY TABLE cdp_booker_{personid} AS SELECT * FROM read_parquet('profiles/booker_details/*.parquet') WHERE personid ='{personid}'")
+        conn.execute(f"CREATE TEMPORARY TABLE cdp_booker_{personid} AS SELECT * FROM read_parquet('../profiles/booker_details/*.parquet') WHERE personid ='{personid}'")
         booker_df = conn.execute(f"SELECT * FROM cdp_booker_{personid}").df()
         booker_dict = booker_df.to_dict()
         booker_dict = reframe_booker_dict(booker_dict)
