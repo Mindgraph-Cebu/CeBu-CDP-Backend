@@ -156,6 +156,7 @@ def profile():
         passenger_df = conn.execute(f"SELECT * FROM cdp_passenger_{passenger_hash}").df()
         passenger_dict = passenger_df.to_dict()
         passenger_dict = reframe_passenger_dict(passenger_dict)
+        passenger_dict["TotalRevenue"] = float(passenger_dict["TotalRevenue"])
         json_data = json.dumps(passenger_dict, sort_keys=False)
         return Response(json_data, content_type='application/json')
     
@@ -168,11 +169,12 @@ def profile():
         booker_df = conn.execute(f"SELECT * FROM cdp_booker_{personid}").df()
         booker_dict = booker_df.to_dict()
         booker_dict = reframe_booker_dict(booker_dict)
+        booker_dict["TotalRevenue"] = float(booker_dict["TotalRevenue"])
         json_data = json.dumps(booker_dict, sort_keys=False)
         return Response(json_data, content_type='application/json')
 
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0',port=80)
+    app.run(host='0.0.0.0',port=8080)
 
