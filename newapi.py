@@ -38,6 +38,8 @@ def profile():
             passenger_dict = passenger_df.to_dict()
             passenger_dict = reframe_passenger_dict(passenger_dict)
             passenger_dict["TotalRevenue"] = round(float(passenger_dict["TotalRevenue"]),2)
+            for i, k in passenger_dict["Details"].items():
+                k["revenue"] = round(float(k["revenue"]),2)
             json_data = json.dumps(passenger_dict, sort_keys=False)
             return Response(json_data, content_type='application/json')
         except Exception as e:
@@ -55,6 +57,8 @@ def profile():
             booker_dict = booker_df.to_dict()
             booker_dict = reframe_booker_dict(booker_dict)
             booker_dict["TotalRevenue"] = round(float(booker_dict["TotalRevenue"]),2)
+            for i, k in booker_dict["Details"].items():
+                k["revenue"] = round(float(k["revenue"]))
             json_data = json.dumps(booker_dict, sort_keys=False)
             return Response(json_data, content_type='application/json')
         except Exception as e:
