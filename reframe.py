@@ -58,8 +58,8 @@ def reframe_booker_dict(booker_dict):
         TravelDestination = booker_dict.get("TravelDestination", {})
         TravelDestination = dict(sorted(TravelDestination.items(), key=lambda item: item[1], reverse=True))
         del booker_dict["TravelSeat"], booker_dict["TravelOrigin"], booker_dict["TravelDestination"]
-        booker_dict["TravelSeats"] = limit_dict(TravelSeat, 1000)
-        i = len(booker_dict["TravelSeats"])
+        booker_dict["TravelSeat"] = limit_dict(TravelSeat, 1000)
+        i = len(booker_dict["TravelSeat"])
         print(i)
         booker_dict["TravelOrigin"] = limit_dict(TravelOrigin, 1000)
         booker_dict["TravelDestination"] = limit_dict(TravelDestination, 1000)
