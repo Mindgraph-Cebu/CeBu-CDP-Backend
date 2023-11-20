@@ -89,10 +89,9 @@ def profile_search():
 
     if firstname != "None":
         if profile_type == "passenger":
-            query += f"firstname like '%{firstname}%' "
+            query += f"upper(firstname) like upper('%{firstname}%') "
         elif profile_type == "booker":
-            query += f"bookerfirstname like '%{firstname}%' "
-        
+            query += f"upper(bookerfirstname)like upper('%{firstname}%') "
         count += 1
         print(query)
         print(count)
@@ -102,9 +101,9 @@ def profile_search():
         if count >= 1:
             query += "and "
         if profile_type == "passenger":
-            query += f"lastname like '%{lastname}%' "
+            query += f"upper(lastname) like upper('%{lastname}%') "
         elif profile_type == "booker":
-            query += f"bookerlastname like '%{lastname}%' "
+            query += f"upper(bookerlastname) like upper('%{lastname}%') "
 
     if email  != "None":
         if count >= 1:

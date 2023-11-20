@@ -3,24 +3,23 @@ from flask_cors import CORS
 import pandas as pd
 import duckdb
 import json
-import psutil
+
 
 from reframe import reframe_booker_dict, reframe_passenger_dict
 
 app = Flask(__name__)
 CORS(app, origins="*")
 
-# Use app.before_request to establish a database connection before each request
+
 @app.before_request
 def before_request():
     g.db = duckdb.connect(database=':memory:')
 
-# Use app.teardown_request to close the database connection after each request
+
 @app.teardown_request
 def teardown_request(exception=None):
     if hasattr(g, 'db'):
         g.db.close()
-
 
     
 
@@ -55,10 +54,9 @@ def profile():
             g.db.execute(f"CREATE TEMPORARY TABLE cdp_booker_{personid} AS SELECT * FROM read_parquet('../profiles/booker_details/*.parquet') WHERE personid ='{personid}'")
             booker_df = g.db.execute(f"SELECT * FROM cdp_booker_{personid}").df()
             booker_dict = booker_df.to_dict()
+            # with open('output.json', 'w') as json_file:
+            #     json.dump(booker_dict, json_file, indent=4)
             booker_dict = reframe_booker_dict(booker_dict)
-            booker_dict["TotalRevenue"] = round(float(booker_dict["TotalRevenue"]),2)
-            for i, k in booker_dict["Details"].items():
-                k["revenue"] = round(float(k["revenue"]))
             json_data = json.dumps(booker_dict, sort_keys=False)
             return Response(json_data, content_type='application/json')
         except Exception as e:
@@ -74,6 +72,8 @@ def milestones():
         milestone_df = g.db.execute("SELECT * FROM cdp_milestones").df()
         milestone_dict = milestone_df.to_dict()
         milestone_dict = {key: value[0] for key, value in milestone_dict.items()}
+        milestone_dict["passengers"] = milestone_dict["customers"]
+        del milestone_dict["customers"]
         json_data = json.dumps(milestone_dict, sort_keys=False)
         return Response(json_data, content_type='application/json')
     except Exception as e:
@@ -129,22 +129,21 @@ def profile_search():
 
         if firstname != "None":
             if profile_type == "passenger":
-                query += f"firstname like '%{firstname}%' "
+                query += f"upper(firstname) like upper('%{firstname}%') "
             elif profile_type == "booker":
-                query += f"bookerfirstname like '%{firstname}%' "
-            
-            count += 1
-            print(query)
-            print(count)
+                query += f"upper(bookerfirstname)like upper('%{firstname}%') "
+        count += 1
+        print(query)
+        print(count)
         
         
         if lastname  != "None":
             if count >= 1:
                 query += "and "
             if profile_type == "passenger":
-                query += f"lastname like '%{lastname}%' "
+                query += f"upper(lastname) like upper('%{lastname}%') "
             elif profile_type == "booker":
-                query += f"bookerlastname like '%{lastname}%' "
+                query += f"upper(bookerlastname) like upper('%{lastname}%') "
 
         if email  != "None":
             if count >= 1:
