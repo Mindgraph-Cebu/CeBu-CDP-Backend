@@ -25,17 +25,7 @@ def reframe_booker_dict(booker_dict):
         booker_dict["TravelBaggage"]=TravelBaggage
         booker_dict["TravelInsurance"]=TravelBaggage
         booker_dict["TravelInsurance"]=TravelInsurance
-        # tb = {}
-        # for key,value in booker_dict["TravelBaggage"].items():
-        #     check = key.split("_")
-        #     toprint = ""
-        #     for element in check :
-        #         if "space" not in element:
-        #             toprint+=element
-                    
-        #     tb[toprint] = value
-        # del booker_dict["TravelBaggage"]
-        # booker_dict["TravelBaggage"] = tb
+
         if "Above100" in booker_dict["AgeRange"]:
             booker_dict["AgeRange"]["Unspecified"] = booker_dict["AgeRange"]["Above100"]
             del booker_dict["AgeRange"]["Above100"]
@@ -68,8 +58,9 @@ def reframe_booker_dict(booker_dict):
 
         booker_dict["TravelBaggage"]=fill_space(booker_dict["TravelBaggage"])
         booker_dict["TravelInsurance"]=fill_space(booker_dict["TravelInsurance"])
-        booker_dict["Details"] = dict(sorted(booker_dict["Details"].items(), key=lambda item: (item[1]["travel_date"] if item[1]["travel_date"] != "Unknown" else "9999-12-31", item[0])))
         
+        booker_dict["Details"] = dict(enumerate(sorted(booker_dict["Details"].values(), key=lambda item: (item["travel_date"] if item["travel_date"] != "Unknown" else "9999-12-31", item["booking_date"]), reverse=True)))
+
 
         return booker_dict
 
@@ -95,20 +86,6 @@ def reframe_passenger_dict(passenger_dict):
         passenger_dict["TravelBaggage"]=TravelBaggage
         passenger_dict["TravelInsurance"]=TravelBaggage
         passenger_dict["TravelInsurance"]=TravelInsurance
-        # tb = {}
-        # for key,value in passenger_dict["TravelBaggage"].items():
-        #     check = key.split("_")
-        #     toprint = ""
-        #     for element in check :
-        #         if "space" not in element:
-        #             toprint+=element
-                    
-        #     tb[toprint] = value
-        # del passenger_dict["TravelBaggage"]
-
-        # with open('Insurance.json','w') as file:
-        #      json.dump(passenger_dict["TravelInsurance"],file)
-        # passenger_dict["TravelBaggage"] = tb
 
         TravelSeat = passenger_dict.get("TravelSeat", {})
         TravelSeat = dict(sorted(TravelSeat.items(), key=lambda item: item[1], reverse=True))
@@ -134,7 +111,9 @@ def reframe_passenger_dict(passenger_dict):
         
         passenger_dict["TravelBaggage"]=fill_space(passenger_dict["TravelBaggage"])
         passenger_dict["TravelInsurance"]=fill_space(passenger_dict["TravelInsurance"])
-        passenger_dict["Details"] = dict(sorted(passenger_dict["Details"].items(), key=lambda item: (item[1]["travel_date"] if item[1]["travel_date"] != "Unknown" else "9999-12-31", item[0])))
+        # passenger_dict["Details"] = dict(sorted(passenger_dict["Details"].items(), key=lambda item: (item[1]["travel_date"] if item[1]["travel_date"] != "Unknown" else "9999-12-31", item[0])))
+        passenger_dict["Details"] = dict(enumerate(sorted(passenger_dict["Details"].values(), key=lambda item: (item["travel_date"] if item["travel_date"] != "Unknown" else "9999-12-31", item["booking_date"]), reverse=True)))
+
         return passenger_dict
 
 
@@ -155,20 +134,11 @@ def sort_age(age_dict):
     "1_to_10", "11_to_20", "21_to_30", "31_to_40", "41_to_50",
     "51_to_60", "61_to_70", "71_to_80", "81_to_90", "91_to_100", "Unspecified"]
 
-    # Sort the original dictionary based on the custom order
+    
      sorted_age_range_dict = dict(sorted(age_dict.items(), key=lambda item: age_group_order.index(item[0])))
 
      return sorted_age_range_dict
 
-
-# def fill_space(space_dict):
-#      for key in space_dict:
-#         new_key = key.replace("_space1_", " ").replace("_space2_", " ").replace("_space3_", " ").replace("_space4_", " ").replace("_space5_", " ").replace("_space6_", " ").replace("_space7_", " ").replace("_", "")
-#         new_key = re.sub(r'\s+', ' ', new_key).strip()
-#         space_dict[new_key] = space_dict.pop(key)
-
-#      return space_dict
-     
 
 def fill_space(space_dict):
     new_space_dict = {}
