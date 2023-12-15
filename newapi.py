@@ -97,19 +97,20 @@ def profile_search():
         phone = request.args.get("phone")
         email = request.args.get("email")
         id = request.args.get("id")
+        dateofbirth = request.args.get("dateofbirth")
         
 
         g.db.execute(f"DROP TABLE IF EXISTS cdp_profile")
 
         
         if profile_type == "passenger":
-            query = f"CREATE TEMPORARY TABLE cdp_profile AS SELECT passenger_hash,firstname,lastname,phone,emailaddress FROM read_parquet('../profiles/{path}/*.parquet')  "
+            query = f"CREATE TEMPORARY TABLE cdp_profile AS SELECT passenger_hash,firstname,lastname,phone,emailaddress,dateofbirth FROM read_parquet('../profiles/{path}/*.parquet')  "
         elif profile_type == "booker":
             query = f"CREATE TEMPORARY TABLE cdp_profile AS SELECT personid,bookerfirstname,bookerlastname,bookermobile,bookeremailaddress FROM read_parquet('../profiles/{path}/*.parquet')  "
 
         count = 0
 
-        if firstname != "None" or lastname != "None" or phone != "None" or email != "None" or id != "None":
+        if firstname != "None" or lastname != "None" or phone != "None" or email != "None" or id != "None" or dateofbirth!="None":
             query  += "WHERE "
 
         
@@ -130,9 +131,11 @@ def profile_search():
         if firstname != "None":
             if profile_type == "passenger":
                 query += f"upper(firstname) like upper('%{firstname}%') "
+                
             elif profile_type == "booker":
                 query += f"upper(bookerfirstname)like upper('%{firstname}%') "
-        count += 1
+            count += 1
+        
         print(query)
         print(count)
         
@@ -144,6 +147,7 @@ def profile_search():
                 query += f"upper(lastname) like upper('%{lastname}%') "
             elif profile_type == "booker":
                 query += f"upper(bookerlastname) like upper('%{lastname}%') "
+            count += 1
 
         if email  != "None":
             if count >= 1:
@@ -152,6 +156,7 @@ def profile_search():
                 query += f"emailaddress like '%{email}%' "
             elif profile_type == "booker":
                 query += f"bookeremailaddress like '%{email}%' "
+            count += 1
 
         if phone  != "None":
             if count >= 1:
@@ -160,6 +165,17 @@ def profile_search():
                 query += f"phone like '%{phone}%' "
             elif profile_type == "booker":
                 query += f"bookermobile '%{phone}%' "
+            count += 1
+
+        if dateofbirth  != "None":
+
+            if count >= 1:
+                query += "and "
+
+            if profile_type == "passenger":
+                query += f"dateofbirth == '{dateofbirth}' "
+            elif profile_type == "booker":
+                query += ""
             
         
         query += "limit 51;"
@@ -174,20 +190,7 @@ def profile_search():
         json_data = json.dumps(df_dict, sort_keys=False)
         # print(json_data)
         return Response(json_data, content_type='application/json')
-        # def generate():
-        #     yield '{"results": ['
-            
-        #     # Execute the query and iterate over the results
-        #     for row in g.db.execute(query).fetchall():
-        #         row_dict = dict(zip(row.columns, row))
-        #         json_data = json.dumps(row_dict, sort_keys=False)
-        #         yield json_data + ','
-            
-        #     yield ']}'
 
-        # # Create a Response with a generator as its data source
-        # return Response(generate(), content_type='application/json')
-    
 
     except Exception as e:
         print(f"Error in profile's route: {e}")
