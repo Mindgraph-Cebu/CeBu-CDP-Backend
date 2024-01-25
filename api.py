@@ -21,7 +21,11 @@ def teardown_request(exception=None):
     if hasattr(g, 'db'):
         g.db.close()
 
+@app.route('/api/health')
+def health_check():
     
+    is_healthy = True
+    return ("OK", 200) if is_healthy else ("Service Unavailable", 500)
 
 @app.route('/api/profile', methods = ['GET'])
 def profile():
