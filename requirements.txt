@@ -1,7 +1,4 @@
-flask
-flask-cors
 fastapi
+uvicorn[standard]
+pydantic
 duckdb
-numpy
-pandas
-aioduckdb
