@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Depends, Header
+from fastapi import FastAPI, Depends, Header, HTTPException
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Annotated, Union
 import duckdb
@@ -34,6 +35,14 @@ if user_env == 's3':
     duckdb.execute("LOAD aws;")
 
     duckdb.execute("CREATE SECRET (TYPE S3,PROVIDER CREDENTIAL_CHAIN,REGION 'ap-southeast-1',ENDPOINT 's3.amazonaws.com',URL_STYLE 'vhost');")
+
+async def custom_exception_handler(request, exc):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"response": exc.detail}
+    )
+
+app.exception_handler(HTTPException)(custom_exception_handler)
 
 async def get_access_token(Access_token: Annotated[Union[str, None], Header()] = None):
     return authenticate_access_token(Access_token)
