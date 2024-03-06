@@ -26,8 +26,8 @@ if user_env == 's3':
 
     duckdb.execute("CREATE SECRET (TYPE S3,PROVIDER CREDENTIAL_CHAIN,REGION 'ap-southeast-1',ENDPOINT 's3.amazonaws.com',URL_STYLE 'vhost');")
 
-async def get_access_token(access_token: Annotated[Union[str, None], Header()] = None):
-    return authenticate_access_token(access_token)
+async def get_access_token(Access_token: Annotated[Union[str, None], Header()] = None):
+    return authenticate_access_token(Access_token)
 
 @app.get('/api/health')
 async def health_check():
