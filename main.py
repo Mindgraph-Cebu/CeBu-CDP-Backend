@@ -110,7 +110,6 @@ async def profile_search(
 ) -> dict:
     if bool_access_token:
         if profile_type == "passenger":
-            path = "passenger_details"
             if user_env == "local":
                 query = f"SELECT passenger_hash,firstname,lastname,phone,emailaddress,dateofbirth FROM read_parquet('./data/passenger.parquet')  "
             elif user_env == "s3":
@@ -120,11 +119,10 @@ async def profile_search(
                 return {"error": "Invalid environment specified. Please provide local or s3"}
 
         elif profile_type == "booker":
-            path = "booker_details"
             if user_env == "local":
-                query = f"SELECT personid,bookerfirstname,bookerlastname,bookermobile,bookeremailaddress FROM read_parquet('../profiles/{path}/*.parquet')  "
+                query = f"SELECT personid,bookerfirstname,bookerlastname,bookermobile,bookeremailaddress FROM read_parquet('./data/booker.parquet')  "
             elif user_env == "s3":
-                file_path = f"s3://{bucket_name}/profiles/{path}/*.parquet"
+                file_path = f"s3://{bucket_name}/data/booker.parquet"
                 query = f"SELECT passenger_hash,firstname,lastname,phone,emailaddress,dateofbirth FROM read_parquet('{file_path}')  "
             else:
                 return {"error": "Invalid environment specified. Please provide local or s3"}
