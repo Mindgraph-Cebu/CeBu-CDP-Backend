@@ -12,9 +12,9 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
@@ -62,7 +62,6 @@ async def milestones(bool_access_token: Annotated[bool, Depends(get_access_token
             return {"error": f"An internal error occurred: {str(e)}"}  
     else:
         return {"error": "Unable to get access token"}  
-
 
 @app.get('/api/profile')
 async def profile(profile_type : str ,
