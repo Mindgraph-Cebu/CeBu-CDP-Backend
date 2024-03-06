@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, Header
+from fastapi.middleware.cors import CORSMiddleware
 from typing import Annotated, Union
 import duckdb
 from app.ComputePassenger import reframePassenger
@@ -8,6 +9,14 @@ import subprocess
 import json
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["*"],
+)
 
 db = duckdb.connect(database=':memory:')
 
