@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Depends, Header
-from typing import Annotated
+from typing import Annotated, Union
 import duckdb
 from app.ComputePassenger import reframePassenger
 from app.ComputeBooker import reframeBooker
@@ -26,7 +26,7 @@ if user_env == 's3':
 
     duckdb.execute("CREATE SECRET (TYPE S3,PROVIDER CREDENTIAL_CHAIN,REGION 'ap-southeast-1',ENDPOINT 's3.amazonaws.com',URL_STYLE 'vhost');")
 
-async def get_access_token(access_token: Annotated[str | None, Header()] = None):
+async def get_access_token(access_token: Annotated[Union[str, None], Header()] = None):
     return authenticate_access_token(access_token)
 
 @app.get('/api/health')

@@ -2,7 +2,7 @@ fastapi
 uvicorn[standard]
 pydantic
 duckdb
-PyJWT
+PyJWT==2.8.0
 python-dotenv
 numpy
 pandas
