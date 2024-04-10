@@ -5,9 +5,10 @@ from typing import Annotated, Union
 import duckdb
 from app.ComputePassenger import reframePassenger
 from app.ComputeBooker import reframeBooker
-from app.auth import authenticate_access_token
+from app.Authenticate import authenticate_access_token
 import subprocess
 import json
+import os
 
 app = FastAPI()
 
@@ -21,20 +22,6 @@ app.add_middleware(
 
 db = duckdb.connect(database=':memory:')
 
-with open('config.json', 'r') as config_file:
-    config_data = json.load(config_file)
-
-user_env = config_data.get('env')
-bucket_name = config_data.get('bucket-name')
-
-if user_env == 's3':
-    duckdb.execute("INSTALL httpfs;")
-    duckdb.execute("LOAD httpfs;")
-
-    duckdb.execute("INSTALL aws;")
-    duckdb.execute("LOAD aws;")
-
-    duckdb.execute("CREATE SECRET (TYPE S3,PROVIDER CREDENTIAL_CHAIN,REGION 'ap-southeast-1',ENDPOINT 's3.amazonaws.com',URL_STYLE 'vhost');")
 
 async def custom_exception_handler(request, exc):
     return JSONResponse(
@@ -56,50 +43,27 @@ async def health_check():
 async def milestones(bool_access_token: Annotated[bool, Depends(get_access_token)]) -> dict:
     if bool_access_token:
         try:
-            if user_env == 'local':
-                file_path = './data/index_milestone.parquet'
-            elif user_env == 's3':
-                file_path = f's3://{bucket_name}/data/index_milestone.parquet'
-            else:
-                return {"error": "Invalid environment specified. Please provide local or s3"} 
-
-            milestone_dict = {key: value[0] for key, value in duckdb.execute(f"SELECT * FROM read_parquet('{file_path}')").fetch_df().to_dict().items()}
+            milestone_dict = {key: value[0] for key, value in duckdb.execute(f"SELECT * FROM read_parquet('../profiles/index_milestone/*.parquet')").fetch_df().to_dict().items()}
             milestone_dict['passengers'] = milestone_dict.pop('customers')  
             return milestone_dict    
-        
         except Exception as e:
             return {"error": f"An internal error occurred: {str(e)}"}  
-    else:
-        return {"error": "Unable to get access token"}  
+      
 
 @app.get('/api/profile')
 async def profile(profile_type : str ,
                   id : str,
                   bool_access_token: Annotated[bool, Depends(get_access_token)]) -> dict:
     if bool_access_token:
-        if profile_type == 'passenger':
-            if user_env == 'local':
-                file_path = './data/passenger.parquet'
-            elif user_env == 's3':
-                file_path = f's3://{bucket_name}/data/passenger.parquet'
-            else:
-                return {"error": "Invalid environment specified. Please provide local or s3"}
-             
+        if profile_type == 'passenger':             
             passenger_hash = id
-            passenger_dict = {key:value[0] for key,value in db.execute(f"SELECT * FROM read_parquet('{file_path}') WHERE passenger_hash ='{passenger_hash}'").fetch_df().to_dict().items()}
+            passenger_dict = {key:value[0] for key,value in db.execute(f"SELECT * FROM read_parquet('../profiles/passenger_details/*.parquet') WHERE passenger_hash ='{passenger_hash}'").fetch_df().to_dict().items()}
             passenger_dict = await reframePassenger(passenger_dict)
             return passenger_dict
     
         elif profile_type == 'booker':
-            if user_env == 'local':
-                file_path = './data/booker.parquet'
-            elif user_env == 's3':
-                file_path = f's3://{bucket_name}/data/booker.parquet'
-            else:
-                return {"error": "Invalid environment specified. Please provide local or s3"}
-             
             personid = id
-            booker_dict = {key:value[0] for key,value in db.execute(f" SELECT * FROM read_parquet('{file_path}') WHERE personid ='{personid}'").fetch_df().to_dict().items()}
+            booker_dict = {key:value[0] for key,value in db.execute(f" SELECT * FROM read_parquet('../profiles/booker_details/*.parquet') WHERE personid ='{personid}'").fetch_df().to_dict().items()}
             booker_dict = await reframeBooker(booker_dict)
             return booker_dict
         
@@ -119,22 +83,14 @@ async def profile_search(
 ) -> dict:
     if bool_access_token:
         if profile_type == "passenger":
-            if user_env == "local":
-                query = f"SELECT passenger_hash,firstname,lastname,phone,emailaddress,dateofbirth FROM read_parquet('./data/passenger.parquet')  "
-            elif user_env == "s3":
-                file_path = f"s3://{bucket_name}/data/passenger.parquet"
-                query = f"SELECT passenger_hash,firstname,lastname,phone,emailaddress,dateofbirth FROM read_parquet('{file_path}')  "
-            else:
-                return {"error": "Invalid environment specified. Please provide local or s3"}
+            
+            query = f"SELECT passenger_hash,firstname,lastname,phone,emailaddress,dateofbirth FROM read_parquet('../profiles/passenger_details/*.parquet')  "
+
 
         elif profile_type == "booker":
-            if user_env == "local":
-                query = f"SELECT personid,bookerfirstname,bookerlastname,bookermobile,bookeremailaddress FROM read_parquet('./data/booker.parquet')  "
-            elif user_env == "s3":
-                file_path = f"s3://{bucket_name}/data/booker.parquet"
-                query = f"SELECT passenger_hash,firstname,lastname,phone,emailaddress,dateofbirth FROM read_parquet('{file_path}')  "
-            else:
-                return {"error": "Invalid environment specified. Please provide local or s3"}
+           
+            query = f"SELECT personid,bookerfirstname,bookerlastname,bookermobile,bookeremailaddress FROM read_parquet('../profiles/booker_details/*.parquet')  "
+            
 
         # print(query)
         count = 0
@@ -213,12 +169,12 @@ async def profile_search(
 @app.get('/api/copy_files')
 async def copy_files():
     try:
-        s3_url = f"s3://{bucket_name}/ui/"
+        s3_url = f"s3://{os.getenv('BUCKET_NAME')}/ui/"
 
         result = subprocess.run(['/usr/local/bin/aws', 's3', 'sync', '--delete', s3_url, '/home/pa-1linuxadmin/profiles/'], capture_output=True, text=True)
 
         if result.returncode == 0:
-            return {'message': 'Files synced successfully from S3 to local directory!'}
+            return {'status': 'Files synced successfully'}
         else:
             return {'error': result.stderr.strip()}
         
