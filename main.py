@@ -1,3 +1,15 @@
+# <!-- Copyright (c) 2024. MindGraph Technologies. All rights reserved. -->
+# <!-- Proprietary and confidential. Copying and distribution is strictly prohibited. -->
+
+__author__ = "Pradish Pranam"
+__copyright__ = "MindGraph"
+__version__ = "0.1.0"
+__maintainer__ = "Pradish Pranam"
+__email__ = "pradishpranam.s@mind-graph.com"
+__status__ = "Development"
+__date__ = "04/Apr/2024"
+
+
 from fastapi import FastAPI, Depends, Header, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,6 +21,8 @@ from app.Authenticate import authenticate_access_token
 import subprocess
 import json
 import os
+from app.LICENSE import check_license
+import sys
 
 app = FastAPI()
 
@@ -22,6 +36,8 @@ app.add_middleware(
 
 db = duckdb.connect(database=':memory:')
 
+check_license()
+ 
 
 async def custom_exception_handler(request, exc):
     return JSONResponse(
