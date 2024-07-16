@@ -10,6 +10,11 @@ async def limit_dict(original_dict, limit):
 
 
 async def sort_months(months_dict):
+     month_indices = {month.lower(): index for index, month in enumerate(calendar.month_name) if month}
+     sorted_data = dict(sorted(months_dict.items(), key=lambda item: month_indices[item[0]]))   
+     return sorted_data
+
+async def sort_months_old(months_dict):
      month_indices = {month: index for index, month in enumerate(calendar.month_name) if month}
      sorted_data = dict(sorted(months_dict.items(), key=lambda item: month_indices[item[0]]))   
      return sorted_data
