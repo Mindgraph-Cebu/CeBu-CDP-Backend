@@ -1,4 +1,4 @@
-from app.Functions import fill_space,limit_dict,sort_age,sort_months, sort_months_old
+from app.Functions import fill_space,limit_dict,sort_age,sort_months
 import json
 
 async def reframePassengerforathena(passenger_dict):
@@ -122,7 +122,7 @@ async def reframePassengerforduckdb(passenger_dict):
         passenger_dict["TravelOrigin"]=TravelOrigin
         passenger_dict["TravelDestination"]=TravelDestination
 
-        passenger_dict["Months"] = await sort_months_old(passenger_dict["Months"])
+        passenger_dict["Months"] = await sort_months(passenger_dict["Months"])
 
         passenger_dict["TravelBaggage"]=await fill_space(passenger_dict["TravelBaggage"])
         passenger_dict["TravelInsurance"]=await fill_space(passenger_dict["TravelInsurance"])

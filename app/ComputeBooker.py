@@ -1,8 +1,8 @@
-from app.Functions import fill_space,limit_dict,sort_age,sort_months,sort_months_old
+from app.Functions import fill_space,limit_dict,sort_age,sort_months
 import json
 
 async def reframeBookerforathena(booker_dict):
-     #    print("reframeBooker starts")
+        # print("reframeBooker starts")
         TravelOrigin = json.loads(booker_dict["travelorigin"])
         TravelDestination = json.loads(booker_dict["traveldestination"])
         TravelSeat = json.loads(booker_dict["travelseat"])
@@ -12,7 +12,7 @@ async def reframeBookerforathena(booker_dict):
         booker_dict["traveldestination"]= TravelDestination
         booker_dict["travelseat"]= TravelSeat
         booker_dict["details"]= Details
-     #    print("loaded as json!")
+        # print("loaded as json!")
 
         mylist = ["personid", "totalpassengers", "uniqueclients", "bookingmonth_separator_", "travelmeals_separator_", "bookingchannel_separator_", "isemployee_separator_", "travelbaggage_separator_", 
           "gender_separator_", "isemployeedependent_separator_", "travelinsurance_separator_", "travelsoloorgroup_separator_",
@@ -130,7 +130,7 @@ async def reframeBookerforduckdb(booker_dict):
         # print(i)
         booker_dict["TravelOrigin"] = await limit_dict(TravelOrigin, 1000)
         booker_dict["TravelDestination"] =await limit_dict(TravelDestination, 1000)
-        booker_dict["Months"] =await sort_months_old(booker_dict["Months"])
+        booker_dict["Months"] =await sort_months(booker_dict["Months"])
         booker_dict["AgeRange"] =await sort_age(booker_dict["AgeRange"])
 
         booker_dict["TravelBaggage"]=await fill_space(booker_dict["TravelBaggage"])
