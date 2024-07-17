@@ -25,7 +25,6 @@ def authenticate_access_token(access_token: str):
         else:
             return False
 
-        
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token has expired.")
     

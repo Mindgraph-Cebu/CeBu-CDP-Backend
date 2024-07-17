@@ -6,3 +6,6 @@ PyJWT==2.8.0
 python-dotenv
 numpy
 pandas
+boto3
+cachetools
+locust
