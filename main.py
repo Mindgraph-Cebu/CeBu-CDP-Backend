@@ -173,7 +173,7 @@ async def profile(profile_type : str,
             passenger_hash = id
             if USER_ENV == 'local' or USER_ENV == 's3': 
                 if USER_ENV == 'local':
-                    file_path = './data/passenger.parquet'
+                    file_path = './data/modified_passenger.parquet'
                 elif USER_ENV == 's3':
                     file_path = f's3://{BUCKET_NAME}/data/passenger.parquet'
 
@@ -188,9 +188,11 @@ async def profile(profile_type : str,
                     query = f"SELECT * FROM {ATHENA_SCHEMA_NAME}.passenger_details WHERE passenger_hash = '{passenger_hash}';"
 
                     column_names, values = await fetch_data_from_athena(query)
+                    print("fetch_data_from_athena completed")
 
                     # Creating a dictionary from column names and values
                     passenger_dict = dict(zip(column_names, values[0]))
+                    print("passenger_dict completed")
 
                     try:
                         passenger_dict = await reframePassengerforathena(passenger_dict)
@@ -205,7 +207,7 @@ async def profile(profile_type : str,
             personid = id
             if USER_ENV == 'local' or USER_ENV == 's3':
                 if USER_ENV == 'local':
-                    file_path = './data/booker.parquet'    
+                    file_path = './data/modified_booker.parquet'    
                 elif USER_ENV == 's3':
                     file_path = f's3://{BUCKET_NAME}/data/booker.parquet'
 
@@ -217,7 +219,7 @@ async def profile(profile_type : str,
             if USER_ENV == 'athena':
                 try:
                     query = f"SELECT * FROM {ATHENA_SCHEMA_NAME}.booker_details WHERE personid = {personid};"
-                    # print(query)
+                    print(query)
                 
                     column_names, values = await fetch_data_from_athena(query)
 
@@ -258,7 +260,7 @@ async def profile_search(
         if profile_type == "passenger":
             if USER_ENV == 'local' or USER_ENV == 's3':
                 if USER_ENV == "local":
-                    query_string = f"SELECT passenger_hash,firstname,lastname,phone,emailaddress,dateofbirth FROM read_parquet('./data/passenger.parquet')  "
+                    query_string = f"SELECT passenger_hash,firstname,lastname,phone,emailaddress,dateofbirth FROM read_parquet('./data/modified_passenger.parquet')  "
                 elif USER_ENV == "s3":
                     file_path = f"s3://{BUCKET_NAME}/data/passenger.parquet"
                     query_string = f"SELECT passenger_hash,firstname,lastname,phone,emailaddress,dateofbirth FROM read_parquet('{file_path}')  "
@@ -269,7 +271,7 @@ async def profile_search(
         elif profile_type == "booker":
             if USER_ENV == 'local' or USER_ENV == 's3':
                 if USER_ENV == "local":
-                    query_string = f"SELECT personid, bookerfirstname, bookerlastname, bookermobile, bookeremailaddress FROM read_parquet('./data/booker.parquet')  "
+                    query_string = f"SELECT personid, bookerfirstname, bookerlastname, bookermobile, bookeremailaddress FROM read_parquet('./data/modified_booker.parquet')  "
             elif USER_ENV == "s3":
                 file_path = f"s3://{BUCKET_NAME}/data/booker.parquet"
                 query_string = f"SELECT passenger_hash, firstname, lastname, phone, emailaddress, dateofbirth FROM read_parquet('{file_path}')  "
@@ -283,13 +285,13 @@ async def profile_search(
         if id != None:
             conditions.append(f"passenger_hash = '{id}'" if profile_type == "passenger" else f"personid = {id}")
         if firstname != None:
-            conditions.append(f"upper(firstname) LIKE upper('%{firstname}%')" if profile_type == "passenger" else f"upper(bookerfirstname) LIKE upper('%{firstname}%')")
+            conditions.append(f"upper(firstname) LIKE upper('%{firstname}%')" if profile_type == "passenger" else f"upper(bookerfirstname) LIKE upper('%{firstname}%');")
         if lastname != None:
-            conditions.append(f"upper(lastname) LIKE upper('%{lastname}%')" if profile_type == "passenger" else f"upper(bookerlastname) LIKE upper('%{lastname}%')")
+            conditions.append(f"upper(lastname) LIKE upper('%{lastname}%')" if profile_type == "passenger" else f"upper(bookerlastname) LIKE upper('%{lastname}%');")
         if email != None:
-            conditions.append(f"emailaddress LIKE '%{email}%'" if profile_type == "passenger" else f"bookeremailaddress LIKE '%{email}%'")
+            conditions.append(f"emailaddress LIKE '%{email}%'" if profile_type == "passenger" else f"bookeremailaddress LIKE '%{email}%';")
         if phone != None:
-            conditions.append(f"phone LIKE '%{phone}%'" if profile_type == "passenger" else f"bookermobile LIKE '%{phone}%'")
+            conditions.append(f"phone LIKE '%{phone}%'" if profile_type == "passenger" else f"bookermobile LIKE '%{phone}%';")
         if dateofbirth != None:
             conditions.append(f"dateofbirth = '{dateofbirth}'" if profile_type == "passenger" else "")
 
@@ -298,19 +300,13 @@ async def profile_search(
         else:
             query_string += " LIMIT 51;"
 
+        print()
         print(query_string)
+        print()
 
         if USER_ENV == 'athena':
             column_names, values = await fetch_data_from_athena(query_string)
 
-        if 'WHERE' in query_string and USER_ENV == 'athena':
-            # Creating a dictionary from column names and values
-            result_dict = dict(zip(column_names, values[0]))
-
-            return result_dict
-        
-        elif 'LIMIT' in query_string and USER_ENV == 'athena':
-            # Initialize an empty dictionary to store formatted results
             results = {}
             
             # Iterate through column names
@@ -322,6 +318,7 @@ async def profile_search(
                     results[col_name][str(row_index)] = int(value[col_index]) if col_name == 'personid' else value[col_index]
 
             return results
+        
         else:
             data_dict = db.execute(query_string).fetch_df().to_dict().items()
             return dict(data_dict)
