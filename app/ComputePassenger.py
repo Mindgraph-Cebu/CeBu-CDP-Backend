@@ -3,22 +3,27 @@ import json
 
 async def reframePassengerforathena(passenger_dict):
         
-        # print("reframePassenger starts!")
+        print("reframePassenger starts!")
         TravelOrigin = json.loads(passenger_dict["travelorigin"])
         TravelDestination = json.loads(passenger_dict["traveldestination"])
         TravelSeat = json.loads(passenger_dict["travelseat"])
-        Details = json.loads(passenger_dict["details"])
-        # Details1 = json.loads(passenger_dict["details1"])
-        # Details2 = json.loads(passenger_dict["details2"])
 
-        del passenger_dict["travelorigin"],passenger_dict["traveldestination"],passenger_dict["travelseat"],passenger_dict["details"]
+        del passenger_dict["travelorigin"],passenger_dict["traveldestination"],passenger_dict["travelseat"]
 
         passenger_dict["travelorigin"]= TravelOrigin
         passenger_dict["traveldestination"]= TravelDestination
         passenger_dict["travelseat"]= TravelSeat
-        passenger_dict["details"]= Details
-        # Merge details1 and details2 into details
-        # passenger_dict["Details"]= {**Details1, **Details2}
+
+        if "details1" and "details2" in passenger_dict:
+            Details1 = json.loads(passenger_dict["details1"])
+            Details2 = json.loads(passenger_dict["details2"]) if passenger_dict["details2"] is not None else {}
+            del passenger_dict["details1"], passenger_dict["details2"]
+            passenger_dict["details"] = {**Details1, **Details2}
+
+        elif "details" in passenger_dict:
+            Details = json.loads(passenger_dict["details"])
+            del passenger_dict["details"]
+            passenger_dict["details"]= Details
 
         print("json converted!")
 

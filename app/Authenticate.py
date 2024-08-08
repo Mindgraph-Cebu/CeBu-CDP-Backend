@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def authenticate_access_token(access_token: str):
+    # return True
     try:
         # Decode the access token to extract header information
         token_header = jwt.get_unverified_header(access_token)

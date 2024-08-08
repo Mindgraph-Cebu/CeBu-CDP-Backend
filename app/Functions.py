@@ -1,12 +1,9 @@
 import re
 import calendar
 
-
-
 async def limit_dict(original_dict, limit):
     limited_dict = {key: original_dict[key] for key in list(original_dict.keys())[:limit]}
     return limited_dict
-
 
 async def sort_months(months_dict):
      months_dict = {k.lower(): v for k, v in months_dict.items()}
@@ -15,14 +12,22 @@ async def sort_months(months_dict):
      return sorted_data
 
 async def sort_age(age_dict):
-     age_group_order = [
+
+    print()
+    print(age_dict)
+    print()
+    
+    age_group_order = [
     "1_to_10", "11_to_20", "21_to_30", "31_to_40", "41_to_50",
     "51_to_60", "61_to_70", "71_to_80", "81_to_90", "91_to_100", "Unspecified"]
 
-    
-     sorted_age_range_dict = dict(sorted(age_dict.items(), key=lambda item: age_group_order.index(item[0])))
+    print("sort_age starts!")
+    sorted_age_range_dict = dict(sorted(age_dict.items(), key=lambda item: age_group_order.index(item[0])))
+    print()
+    print(sorted_age_range_dict)
+    print()
 
-     return sorted_age_range_dict
+    return sorted_age_range_dict
 
 
 async def fill_space(space_dict):

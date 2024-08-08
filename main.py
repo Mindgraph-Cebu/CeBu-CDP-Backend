@@ -285,17 +285,19 @@ async def profile_search(
         if id != None:
             conditions.append(f"passenger_hash = '{id}'" if profile_type == "passenger" else f"personid = {id}")
         if firstname != None:
-            conditions.append(f"upper(firstname) LIKE upper('%{firstname}%')" if profile_type == "passenger" else f"upper(bookerfirstname) LIKE upper('%{firstname}%');")
+            conditions.append(f"upper(firstname) LIKE upper('%{firstname}%')" if profile_type == "passenger" else f"upper(bookerfirstname) LIKE upper('%{firstname}%')")
         if lastname != None:
-            conditions.append(f"upper(lastname) LIKE upper('%{lastname}%')" if profile_type == "passenger" else f"upper(bookerlastname) LIKE upper('%{lastname}%');")
+            conditions.append(f"upper(lastname) LIKE upper('%{lastname}%')" if profile_type == "passenger" else f"upper(bookerlastname) LIKE upper('%{lastname}%')")
         if email != None:
-            conditions.append(f"emailaddress LIKE '%{email}%'" if profile_type == "passenger" else f"bookeremailaddress LIKE '%{email}%';")
+            conditions.append(f"emailaddress LIKE '%{email}%'" if profile_type == "passenger" else f"bookeremailaddress LIKE '%{email}%'")
         if phone != None:
-            conditions.append(f"phone LIKE '%{phone}%'" if profile_type == "passenger" else f"bookermobile LIKE '%{phone}%';")
+            conditions.append(f"phone LIKE '%{phone}%'" if profile_type == "passenger" else f"bookermobile LIKE '%{phone}%'")
         if dateofbirth != None:
             conditions.append(f"dateofbirth = '{dateofbirth}'" if profile_type == "passenger" else "")
 
-        if conditions:
+        print(conditions)
+
+        if conditions and conditions != ['']:
             query_string += " WHERE " + " AND ".join(conditions)
         else:
             query_string += " LIMIT 51;"

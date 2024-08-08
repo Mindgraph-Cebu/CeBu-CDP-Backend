@@ -2,22 +2,31 @@ from app.Functions import fill_space,limit_dict,sort_age,sort_months
 import json
 
 async def reframeBookerforathena(booker_dict):
-        print("reframeBooker starts")
+        print("reframeBookerforathena starts")
         TravelOrigin = json.loads(booker_dict["travelorigin"])
         TravelDestination = json.loads(booker_dict["traveldestination"])
         TravelSeat = json.loads(booker_dict["travelseat"])
-        Details = json.loads(booker_dict["details"])
-        # Details1 = json.loads(booker_dict["details1"])
-        # Details2 = json.loads(booker_dict["details2"])
 
-        del booker_dict["travelorigin"],booker_dict["traveldestination"],booker_dict["travelseat"],booker_dict["details"]
-        # del booker_dict["details1"], booker_dict["details2"]
-        booker_dict["details"]= Details
+        del booker_dict["travelorigin"], booker_dict["traveldestination"], booker_dict["travelseat"]
 
-        # # Merge details1 and details2 into details
-        # booker_dict["details"] = {**Details1, **Details2}
+        booker_dict["travelorigin"] = TravelOrigin
+        booker_dict["traveldestination"] = TravelDestination
+        booker_dict["travelseat"] = TravelSeat
 
-        print("loaded as json!")
+        if "details1" and "details2" in booker_dict:
+            print("details1 & details2 present!")
+            Details1 = json.loads(booker_dict["details1"])
+            Details2 = json.loads(booker_dict["details2"]) if booker_dict["details2"] is not None else {}
+            del booker_dict["details1"], booker_dict["details2"]
+            booker_dict["details"] = {**Details1, **Details2}
+
+        elif "details" in booker_dict:
+            print("details is present!")
+            Details = json.loads(booker_dict["details"])
+            del booker_dict["details"]
+            booker_dict["details"]= Details
+
+        print("json converted!")
 
         mylist = ["personid", "totalpassengers", "uniqueclients", "bookingmonth_separator_", "travelmeals_separator_", "bookingchannel_separator_", "isemployee_separator_", "travelbaggage_separator_", 
           "gender_separator_", "isemployeedependent_separator_", "travelinsurance_separator_", "travelsoloorgroup_separator_",
@@ -49,7 +58,7 @@ async def reframeBookerforathena(booker_dict):
         booker_dict["traveldestination"]= TravelDestination
         
         if "above100" in booker_dict["agerange"]:
-             booker_dict["agerange"]["unspecified"] = booker_dict["agerange"]["above100"]
+             booker_dict["agerange"]["Unspecified"] = booker_dict["agerange"]["above100"]
              del booker_dict["agerange"]["above100"]
 
         booker_dict["totalrevenue"] = round(float(booker_dict["totalrevenue"]), 2)
